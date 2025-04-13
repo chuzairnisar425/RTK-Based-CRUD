@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAddPostMutation } from '../../App/service/postApi';
+import { useAddPostMutation } from '../../App/service/PostApi';
 
 const AddPost = () => {
     const [title, setTitle] = useState('');

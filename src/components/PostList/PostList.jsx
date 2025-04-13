@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useDeletePostMutation, useGetPostsQuery } from '../../App/service/postApi';
 import { setSelectedPost } from '../../App/slice/PostSlice';
 import PostDetailModal from '../PostDetails/PostDetailModal';
 import { FaTimesCircle } from 'react-icons/fa';
+import { useDeletePostMutation, useGetPostsQuery } from '../../App/service/PostApi';
 
 const PostList = () => {
   const { data: posts, isLoading } = useGetPostsQuery();
