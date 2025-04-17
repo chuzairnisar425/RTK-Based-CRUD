@@ -1,18 +1,16 @@
-
+// src/App.jsx
 import React from 'react';
 import { Provider } from 'react-redux';
-import PostList from './components/PostList/PostList';
+import { BrowserRouter } from 'react-router-dom';
 import { store } from './App/store/store';
-import AddFormPost from './components/AddPost/AddPost';
-
+import AppRoutes from './routes/Routes';
 
 const App = () => {
   return (
     <Provider store={store}>
-      <div  >
-        <AddFormPost />
-        <PostList />
-      </div>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
     </Provider>
   );
 };
