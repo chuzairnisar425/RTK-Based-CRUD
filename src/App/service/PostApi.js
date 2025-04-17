@@ -8,6 +8,7 @@ export const postApi = createApi({
         getPosts: builder.query({
             query: () => 'posts',
         }),
+        // for add post
         addPost: builder.mutation({
             query: (addNewPost) => ({
                 url: 'posts',
@@ -15,12 +16,23 @@ export const postApi = createApi({
                 body: addNewPost,
             }),
         }),
+        // for delete post 
         deletePost: builder.mutation({
             query: (id) => ({
                 url: `posts/${id}`,
                 method: 'DELETE',
             }),
         }),
+        // for update post
+        updatePost: builder.mutation({
+            query: ({ id, ...updatedPost }) => ({
+                url: `posts/${id}`,
+                method: 'PUT',
+                body: updatedPost,
+            }),
+            invalidatesTags: ['Posts'],
+        }),
+
 
     }),
 });
@@ -29,4 +41,5 @@ export const {
     useGetPostsQuery,
     useDeletePostMutation,
     useAddPostMutation,
+    useUpdatePostMutation
 } = postApi;

@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { setSelectedPost } from '../../App/slice/PostSlice';
-import PostDetailModal from '../PostDetails/PostDetailModal';
-import { FaTimesCircle } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { FaTimesCircle, FaEdit } from 'react-icons/fa';
 import { useDeletePostMutation, useGetPostsQuery } from '../../App/service/PostApi';
+import UpdatePost from '../UpdatePost/UpdatePost';
 
 const PostList = () => {
   const { data: posts, isLoading } = useGetPostsQuery();
-  const [selectedPost, setSelectedPostLocal] = useState(null);
   const [deletePost] = useDeletePostMutation();
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [editPost, setEditPost] = useState(null);
 
   if (isLoading)
     return <p className="text-center mt-10 text-gray-500">Loading...</p>;
@@ -20,46 +19,56 @@ const PostList = () => {
   const sortedPosts = [...posts].reverse();
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold mb-6 text-center text-green-500">All Posts</h2>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <h2 className="text-3xl font-bold mb-10 text-center text-green-600 tracking-wide">
+        📬 All Posts
+      </h2>
 
-      <div className="items-center justify-center grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {sortedPosts.map((post) => (
           <div
             key={post.id}
-            className="bg-white shadow-lg hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 p-6 rounded-lg relative"
+            className="relative bg-white border border-gray-200 rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
           >
-            <h3 className="font-semibold text-lg mb-4 text-black">
-              <span className="text-base text-gray-500">Title:</span> {post.title}
+            <h3 className="text-lg font-semibold text-gray-800 mb-3">
+              <span className="block text-sm font-medium text-gray-400">Title:</span>
+              {post.title}
             </h3>
 
+            {/* Delete button */}
             <button
-              className="cursor-pointer absolute top-2 right-2 text-red-500 hover:text-red-700 transition duration-200"
+              className="absolute top-3 right-3 text-red-500 hover:text-red-700 transition"
               onClick={(e) => {
                 e.stopPropagation();
                 deletePost(post.id);
               }}
               title="Delete"
             >
-              <FaTimesCircle />
+              <FaTimesCircle size={18} />
             </button>
-            <p
-              className="text-sm text-blue-600 mt-2 cursor-pointer"
-              onClick={() => {
-                dispatch(setSelectedPost(post));
-                setSelectedPostLocal(post);
-              }}
+
+            {/* Edit button */}
+            <button
+              className="absolute top-3 right-10 text-blue-500 hover:text-blue-700 transition"
+              onClick={() => navigate(`/post/edit/${post.id}`)}
+              title="Edit"
             >
-              View Body Details
-            </p>
+              <FaEdit size={18} />
+            </button>
+
+            <div className="mt-6">
+              <p
+                className="inline-block text-sm font-medium text-blue-600 hover:underline cursor-pointer"
+                onClick={() => navigate(`/post/${post.id}`)}
+              >
+                View Body Details →
+              </p>
+            </div>
           </div>
         ))}
       </div>
-
-      <PostDetailModal post={selectedPost} onClose={() => setSelectedPostLocal(null)} />
-
-
     </div>
+
   );
 };
 
