@@ -26,12 +26,13 @@ export const postApi = createApi({
         // for update post
         updatePost: builder.mutation({
             query: ({ id, ...updatedPost }) => ({
-                url: `posts/${id}`,
+                url: `posts/${id}`, // Ensure that the id is being passed correctly
                 method: 'PUT',
                 body: updatedPost,
             }),
             invalidatesTags: ['Posts'],
         }),
+
 
 
     }),

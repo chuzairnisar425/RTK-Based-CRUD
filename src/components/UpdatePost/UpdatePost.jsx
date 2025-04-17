@@ -9,12 +9,12 @@ const UpdatePost = () => {
     const { data: posts, isLoading: loadingPosts } = useGetPostsQuery();
     const [updatePost, { isLoading }] = useUpdatePostMutation();
 
-    const [title, setTitle] = useState();
+    const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
 
     useEffect(() => {
         if (posts) {
-            const post = posts.find((p) => p.id === Number(id)); // fix: cast id to number
+            const post = posts.find((p) => p.id === id);
             if (post) {
                 setTitle(post.title);
                 setBody(post.body);
@@ -24,15 +24,20 @@ const UpdatePost = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log('Submitting Update Post:', { id: id, title, body });
+
         try {
-            await updatePost({ id: Number(id), title, body, userId: 1 }).unwrap();
+            const result = await updatePost({ id: id, title, body, userId: 1 }).unwrap();
+            console.log('Update successful:', result);
             toast.success('Post updated successfully!');
             navigate('/');
         } catch (error) {
+            console.error('Error updating post:', error);
             toast.error('Update failed!');
-            console.error(error);
         }
     };
+
+
 
     if (loadingPosts) return <div className="text-center mt-10">Loading post...</div>;
 
