@@ -9,7 +9,7 @@ const UpdatePost = () => {
     const { data: posts, isLoading: loadingPosts } = useGetPostsQuery();
     const [updatePost, { isLoading }] = useUpdatePostMutation();
 
-    const [title, setTitle] = useState('');
+    const [title, setTitle] = useState();
     const [body, setBody] = useState('');
 
     useEffect(() => {
