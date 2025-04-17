@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import { useDeletePostMutation, useGetPostsQuery } from '../../App/service/PostApi';
 import { ClipLoader } from 'react-spinners';
 
@@ -131,6 +131,15 @@ const PostList = () => {
           <p className="text-gray-400 text-sm italic">🎉 You’ve reached the end!</p>
         )}
       </div>
+
+      {/* Add Post Button */}
+      <button
+        onClick={() => navigate('/addPost')}
+        className="fixed bottom-8 right-8 bg-green-600 text-white rounded-full p-4 shadow-lg hover:bg-green-700 transition-all"
+        title="Add New Post"
+      >
+        <FaPlus size={24} />
+      </button>
     </div>
   );
 };
