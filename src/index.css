@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 html {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply transition-colors duration-500 bg-[#FAFBFF] dark:bg-slate-950 text-slate-900 dark:text-slate-100;
+  user-select: none;
 }

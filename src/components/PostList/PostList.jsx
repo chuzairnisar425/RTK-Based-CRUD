@@ -1,8 +1,23 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
-import { useDeletePostMutation, useGetPostsQuery } from '../../App/service/PostApi';
-import { ClipLoader } from 'react-spinners';
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  FaEdit,
+  FaTrash,
+  FaPlus,
+  FaRegClock,
+  FaArrowRight,
+  FaMoon,
+  FaSun,
+} from "react-icons/fa";
+import {
+  useDeletePostMutation,
+  useGetPostsQuery,
+} from "../../App/service/PostApi";
+import { ClipLoader } from "react-spinners";
+import { RiMoonClearLine } from "react-icons/ri";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleTheme } from "../../App/redux/slices/themeSlice";
+import ThemeToggle from "../ThemeToggle";
 
 const PostList = () => {
   const { data: allPosts, isLoading } = useGetPostsQuery();
@@ -14,6 +29,9 @@ const PostList = () => {
   const navigate = useNavigate();
   const [isFetchingMore, setIsFetchingMore] = useState(false);
 
+  const dispatch = useDispatch();
+  const mode = useSelector((state) => state.theme.mode);
+
   // Initial load
   useEffect(() => {
     if (allPosts?.length) {
@@ -24,14 +42,21 @@ const PostList = () => {
 
   // Infinite scroll observer
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !isFetchingMore && visiblePosts.length < allPosts?.length) {
-        setIsFetchingMore(true);
-        setTimeout(() => {
-          setPage((prevPage) => prevPage + 1);
-        }, 300);
-      }
-    }, { threshold: 1 });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (
+          entry.isIntersecting &&
+          !isFetchingMore &&
+          visiblePosts.length < allPosts?.length
+        ) {
+          setIsFetchingMore(true);
+          setTimeout(() => {
+            setPage((prevPage) => prevPage + 1);
+          }, 300);
+        }
+      },
+      { threshold: 1 }
+    );
 
     const target = observerRef.current;
     if (target) observer.observe(target);
@@ -54,91 +79,174 @@ const PostList = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center mt-16">
-        <ClipLoader size={35} color="#10B981" />
+      <div className="p-6 md:p-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={i}
+            className="animate-pulse bg-white rounded-3xl p-4 border border-gray-100 shadow-sm"
+          >
+            <div className="bg-gray-200 h-44 rounded-2xl mb-4" />
+            <div className="h-6 bg-gray-200 rounded w-3/4 mb-2" />
+            <div className="h-4 bg-gray-100 rounded w-1/2" />
+          </div>
+        ))}
       </div>
     );
   }
 
   if (!allPosts || !allPosts.length) {
-    return <p className="text-center mt-10 text-red-500">No posts found.</p>;
+    return (
+      <div className="flex flex-col items-center justify-center mt-20 text-gray-400">
+        <div className="bg-gray-50 p-6 rounded-full mb-4">
+          <FaPlus size={40} className="text-gray-300" />
+        </div>
+        <p className="text-xl font-medium">No posts found yet.</p>
+        <button
+          onClick={() => navigate("/addPost")}
+          className="mt-4 text-emerald-600 font-semibold hover:underline"
+        >
+          Create your first post
+        </button>
+      </div>
+    );
   }
-
   return (
-    <div className="p-6 md:p-10 bg-gradient-to-b from-gray-50 via-white to-gray-100 min-h-screen">
-      <h2 className="text-4xl font-extrabold mb-12 text-center text-green-600 tracking-wide drop-shadow-sm">
-        📌 All Posts <span className="text-gray-500 text-lg">(Infinite Scroll)</span>
-      </h2>
+    <div className="p-6 md:p-10 bg-[#FAFBFF] dark:bg-slate-950 min-h-screen transition-colors duration-500">
+      {" "}
+      {/* Header Section */}
+      <header className="max-w-7xl mx-auto mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+            Feed <span className="text-emerald-500">.</span>
+          </h2>
+          <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium">
+            Explore the latest stories from the community.
+          </p>
+        </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="flex items-center gap-6">
+          <div className="px-4 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-full text-sm font-bold border border-emerald-100 dark:border-emerald-800">
+            {allPosts.length} Total Posts
+          </div>
+
+          <ThemeToggle />
+        </div>
+      </header>
+      {/* Grid */}
+      {/* Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto">
         {visiblePosts.map((post) => (
           <div
             key={post.id}
-            className="relative bg-white border border-gray-200 rounded-3xl p-5 shadow-lg hover:shadow-2xl transition-transform duration-300 hover:-translate-y-1 animate-fadeIn"
+            className="group relative bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2rem] p-4 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col"
           >
-            <img
-              src={`https://picsum.photos/200/300?random=${post.id}`}
-              alt="Post"
-              loading="lazy"
-              className="w-full h-40 object-cover rounded-lg mb-4 transition-opacity duration-500 opacity-0"
-              onLoad={(e) => {
-                e.currentTarget.classList.add("opacity-100");
-              }}
-            />
+            {/* Image Container */}
+            <div className="relative overflow-hidden rounded-[1.5rem] aspect-[4/3] mb-4">
+              <img
+                src={`https://picsum.photos/seed/${post.id}/600/400`}
+                alt="Post"
+                loading="lazy"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              {/* Floating Action Buttons (Show on Hover) */}
+              <div className="absolute top-4 right-4 flex gap-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
+                {/* Delete Button - Glowing Red */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deletePost(post.id);
+                  }}
+                  className="group/btn relative overflow-hidden bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-3 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] border border-white dark:border-slate-700/50 transition-all duration-300 hover:scale-110 active:scale-90"
+                >
+                  {/* Realistic Shine Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite]" />
 
-            <h3 className="text-xl font-semibold text-gray-800 mb-2 line-clamp-2">
-              {post.title}
-            </h3>
+                  <FaTrash
+                    size={16}
+                    className="relative z-10 text-red-500 dark:text-red-400 drop-shadow-[0_0_8px_rgba(239,68,68,0.4)] group-hover/btn:text-red-600 transition-colors"
+                  />
+                </button>
 
-            <div className="absolute top-4 right-4 flex space-x-2">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deletePost(post.id);
-                }}
-                className="bg-red-100 hover:bg-red-200 text-red-600 p-2 rounded-full shadow-md transition"
-                title="Delete"
-              >
-                <FaTrash size={16} />
-              </button>
+                {/* Edit Button - Glowing Blue/Emerald */}
+                <button
+                  onClick={() => navigate(`/post/edit/${post.id}`)}
+                  className="group/btn relative overflow-hidden bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-3 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] border border-white dark:border-slate-700/50 transition-all duration-300 hover:scale-110 active:scale-90"
+                >
+                  {/* Realistic Shine Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite]" />
 
-              <button
-                onClick={() => navigate(`/post/edit/${post.id}`)}
-                className="bg-blue-100 hover:bg-blue-200 text-blue-600 p-2 rounded-full shadow-md transition"
-                title="Edit"
-              >
-                <FaEdit size={16} />
-              </button>
+                  <FaEdit
+                    size={16}
+                    className="relative z-10 text-blue-500 dark:text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)] group-hover/btn:text-blue-600 transition-colors"
+                  />
+                </button>
+              </div>
             </div>
 
-            <div className="mt-6 text-right">
-              <button
-                onClick={() => navigate(`/post/${post.id}`)}
-                className="text-sm font-medium text-green-600 hover:underline hover:text-green-700 transition-all"
-              >
-                View Full Details →
-              </button>
+            {/* Content */}
+            <div className="px-2 flex flex-col flex-grow">
+              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 mb-2">
+                <FaRegClock /> 2 mins read
+              </div>
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-tight mb-3 line-clamp-2">
+                {post.title}
+              </h3>
+
+              <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-50 dark:border-slate-800">
+                <button
+                  onClick={() => navigate(`/post/${post.id}`)}
+                  className="flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                >
+                  Read Story <FaArrowRight size={12} />
+                </button>
+              </div>
             </div>
           </div>
         ))}
       </div>
-
-      {/* Infinite scroll loader */}
-      <div ref={observerRef} className="h-16 flex justify-center items-center mt-10">
+      {/* Infinite Scroll Footer */}
+      <div ref={observerRef} className="py-20 flex justify-center">
         {visiblePosts.length < allPosts.length ? (
-          <ClipLoader size={30} color="#10B981" />
+          <div className="flex flex-col items-center gap-3">
+            <ClipLoader size={28} color="#10B981" speedMultiplier={0.8} />
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+              Loading More
+            </span>
+          </div>
         ) : (
-          <p className="text-gray-400 text-sm italic">🎉 You’ve reached the end!</p>
+          <div className="h-[1px] w-full max-w-md bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-800 to-transparent relative">
+            <span className="absolute left-1/2 -top-3 -translate-x-1/2 bg-[#FAFBFF] dark:bg-slate-950 px-4 text-slate-400 text-sm italic">
+              You've reached the end
+            </span>
+          </div>
         )}
       </div>
-
-      {/* Add Post Button */}
+      {/* Modern Floating Action Button */}
       <button
-        onClick={() => navigate('/addPost')}
-        className="fixed bottom-8 right-8 bg-green-600 text-white rounded-full p-4 shadow-lg hover:bg-green-700 transition-all"
-        title="Add New Post"
+        onClick={() => navigate("/addPost")}
+        className="fixed bottom-10 right-10 w-16 h-16 rounded-2xl flex items-center justify-center group 
+             bg-slate-900 dark:bg-emerald-600 
+             shadow-[0_20px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_20px_50px_rgba(16,185,129,0.3)]
+             hover:-translate-y-2 transition-all duration-500 overflow-hidden"
       >
-        <FaPlus size={24} />
+        {/* Glassy Shine Layer */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-white/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+        {/* Animated Shimmer Beam */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite] skew-x-[-20deg]" />
+
+        {/* Outer Glow Ring (Pulse) */}
+        <div className="absolute inset-0 rounded-2xl border-2 border-white/20 scale-100 group-hover:scale-110 group-hover:opacity-0 transition-all duration-700" />
+
+        {/* Icon with Neon Glow */}
+        <FaPlus
+          size={24}
+          className="relative z-10 text-white group-hover:rotate-90 transition-transform duration-500 
+               drop-shadow-[0_0_10px_rgba(255,255,255,0.8)] dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]"
+        />
+
+        {/* Inner Bezel Effect */}
+        <div className="absolute inset-0 rounded-2xl shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] pointer-events-none" />
       </button>
     </div>
   );
