@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
 html {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
+}
+
+.toaster_style {
+  z-index: 100000 !important;
 }

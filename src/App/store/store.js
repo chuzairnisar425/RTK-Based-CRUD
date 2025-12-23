@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { postApi } from "../service/PostApi.js";
-
+import themeReducer from "../redux/slices/themeSlice.js";
 export const store = configureStore({
-    reducer: {
-        [postApi.reducerPath]: postApi.reducer,
-    },
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(postApi.middleware)
-})
+  reducer: {
+    theme: themeReducer,
+    [postApi.reducerPath]: postApi.reducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(postApi.middleware),
+});
